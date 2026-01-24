@@ -6,7 +6,7 @@
 #    By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#              #
-#    Updated: 2025/10/28 10:37:46 by efsilva-         ###   ########.fr        #
+#    Updated: 2026/01/22 14:44:39 by efsilva-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,40 +14,54 @@ NAME = minishell
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
-INCLUDES = -I$(INC_DIR) -I$(LIBFT_DIR)
-LDFLAGS = -lreadline -L$(LIBFT_DIR) -lft
+INCLUDES = -I./includes -I./libft
+LDFLAGS = -L./libft -lft -lreadline
 
-SRC_DIR = src
-PARSING_DIR = parsing
-INC_DIR = includes
 OBJ_DIR = obj
 LIBFT_DIR = libft
 
-SRC_FILES = main.c \
-			executor.c \
-			builtins.c \
-			signals.c \
-			environment.c \
-			utils.c
+# Lista de archivos fuente con sus rutas completas
+SRCS = main.c \
+       init/init.c \
+       init/signals.c \
+       init/process.c \
+       init/cleanup.c \
+       executable/bin.c \
+	   executable/bin_utils.c \
+       executable/builtincmd.c \
+       executable/exec.c \
+	   executable/exec_utils.c \
+	   executable/exec_bin.c \
+       parsing/cleanup_parser.c \
+       parsing/expander.c \
+       parsing/expander_2.c \
+       parsing/ft_split_shell.c \
+       parsing/lexer.c \
+       parsing/lexer_utils.c \
+       parsing/parser.c \
+       parsing/parse_2.c \
+       parsing/parser_utils.c \
+       parsing/quote_handler.c \
+	   parsing/quote_utils.c \
+       parsing/syntax_checker.c \
+       enviroment/enviroment.c \
+	   enviroment/free_env_array.c \
+       enviroment/get_enviroment.c \
+	   enviroment/get_enviroment_utils.c \
+       enviroment/shelllvl.c \
+       enviroment/sort_enviroment.c \
+       utils/free_tab.c \
+       utils/free_token.c \
+       utils/env_to_array.c \
+       builtins/ft_echo.c \
+       builtins/ft_pwd.c \
+       builtins/ft_env.c \
+       builtins/ft_cd.c \
+       builtins/ft_export.c \
+       builtins/ft_unset.c \
+       builtins/mini_exit.c
 
-PARSING_FILES = lexer.c \
-				lexer_utils.c \
-				ft_split_shell.c \
-				quote_handler.c \
-				expander.c \
-				parser.c \
-				parser_utils.c \
-				parser_utils_2.c \
-				syntax_checker.c \
-				cleanup_parser.c
-
-SRCS = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
-PARSING_SRCS = $(addprefix $(PARSING_DIR)/, $(PARSING_FILES))
-
-OBJS = $(addprefix $(OBJ_DIR)/, $(SRC_FILES:.c=.o))
-PARSING_OBJS = $(addprefix $(OBJ_DIR)/parsing/, $(PARSING_FILES:.c=.o))
-
-ALL_OBJS = $(OBJS) $(PARSING_OBJS)
+OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)
 
 LIBFT = $(LIBFT_DIR)/libft.a
 
@@ -57,7 +71,6 @@ YELLOW = \033[0;33m
 BLUE = \033[0;34m
 PURPLE = \033[0;35m
 CYAN = \033[0;36m
-WHITE = \033[0;37m
 RESET = \033[0m
 
 all: banner $(LIBFT) $(NAME)
@@ -80,19 +93,14 @@ $(LIBFT):
 	@$(MAKE) -C $(LIBFT_DIR) --no-print-directory
 	@echo "$(GREEN)✅ libft compiled!$(RESET)"
 
-$(NAME): $(ALL_OBJS) $(LIBFT)
+$(NAME): $(OBJS) $(LIBFT)
 	@echo "$(BLUE)🔗 Linking $(NAME)...$(RESET)"
-	@$(CC) $(CFLAGS) -o $(NAME) $(ALL_OBJS) -L$(LIBFT_DIR) -lft -lreadline
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LDFLAGS)
 	@echo "$(GREEN)✅ $(NAME) compiled successfully!$(RESET)"
 	@echo ""
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)
-	@echo "$(YELLOW)🔨 Compiling $<...$(RESET)"
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
-
-$(OBJ_DIR)/parsing/%.o: $(PARSING_DIR)/%.c
-	@mkdir -p $(OBJ_DIR)/parsing
+$(OBJ_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
 	@echo "$(YELLOW)🔨 Compiling $<...$(RESET)"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -112,11 +120,7 @@ re: fclean all
 
 test: $(NAME)
 	@echo "$(CYAN)🧪 Testing basic commands...$(RESET)"
-	@echo "$(YELLOW)Test 1: echo$(RESET)"
-	@./$(NAME) -c "echo 'Hello World'"
-	@echo ""
-	@echo "$(YELLOW)Test 2: pipes$(RESET)"
-	@./$(NAME) -c "ls | grep .c"
+	@./$(NAME)
 
 valgrind: $(NAME)
 	@echo "$(PURPLE)🔍 Running Valgrind...$(RESET)"
@@ -125,6 +129,6 @@ valgrind: $(NAME)
 
 norm:
 	@echo "$(CYAN)📏 Checking Norminette...$(RESET)"
-	@norminette $(SRC_DIR) $(PARSING_DIR) $(INC_DIR) $(LIBFT_DIR)
+	@norminette . includes $(LIBFT_DIR)
 
 .PHONY: all clean fclean re banner test valgrind norm

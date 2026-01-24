@@ -6,12 +6,11 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 12:05:14 by efsilva-          #+#    #+#             */
-/*   Updated: 2025/10/27 10:55:32 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/01/15 02:18:18 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-#include "../libft/libft.h"
 
 static t_token_type	get_operator_type(char *input, int *i)
 {
@@ -20,16 +19,20 @@ static t_token_type	get_operator_type(char *input, int *i)
 
 	c = input[*i];
 	next = input[*i + 1];
+	if (c == '|' && next == '|')
+		return ((*i)++, TOKEN_OR);
 	if (c == '|')
-		return ((next == '|') * (*i)++, (next == '|') ? TOKEN_OR : TOKEN_PIPE);
+		return (TOKEN_PIPE);
 	if (c == '&' && next == '&')
 		return ((*i)++, TOKEN_AND);
+	if (c == '<' && next == '<')
+		return ((*i)++, TOKEN_HEREDOC);
 	if (c == '<')
-		return ((next == '<') * (*i)++, \
-			(next == '<') ? TOKEN_HEREDOC : TOKEN_REDIR_IN);
+		return (TOKEN_REDIR_IN);
+	if (c == '>' && next == '>')
+		return ((*i)++, TOKEN_REDIR_APPEND);
 	if (c == '>')
-		return ((next == '>') * (*i)++, \
-			(next == '>') ? TOKEN_REDIR_APPEND : TOKEN_REDIR_OUT);
+		return (TOKEN_REDIR_OUT);
 	if (c == '(')
 		return (TOKEN_LPAREN);
 	if (c == ')')

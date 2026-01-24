@@ -6,12 +6,11 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 12:05:14 by efsilva-          #+#    #+#             */
-/*   Updated: 2025/10/27 10:55:29 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/01/15 10:44:08 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-#include "../libft/libft.h"
 
 int	is_whitespace(char c)
 {
@@ -20,8 +19,8 @@ int	is_whitespace(char c)
 
 int	is_metachar(char c)
 {
-	return (c == '|' || c == '<' || c == '>' || 
-			c == '&' || c == '(' || c == ')');
+	return (c == '|' || c == '<' || c == '>'
+		|| c == '&' || c == '(' || c == ')');
 }
 
 char	get_quote_type(char c)

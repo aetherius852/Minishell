@@ -1,14 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cleanup_parser.c                                   :+:      :+:    :+:   */
+/*   signals.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/24 12:07:02 by efsilva-          #+#    #+#             */
-/*   Updated: 2025/10/27 10:55:22 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/01/15 02:40:00 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/01/15 02:32:43 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-#include "../libft/libft.h"
+
+extern t_sig	g_sig;
+
+void	init_global_signals(void)
+{
+	g_sig.sigint = 0;
+	g_sig.sigquit = 0;
+	g_sig.exit_status = 0;
+	g_sig.pid = 0;
+}
+
+void	handle_sigint(int sig)
+{
+	(void)sig;
+	g_sig.sigint = 1;
+	g_sig.exit_status = 130;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	init_signals(void)
+{
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
+}

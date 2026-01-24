@@ -6,12 +6,11 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2025/10/27 10:55:18 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/01/21 10:35:24 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-#include "../libft/libft.h"
 
 int	count_words(char *str)
 {
@@ -29,30 +28,33 @@ int	count_words(char *str)
 		state = update_quote_state(str[i], state);
 		if (str[i] == ' ' && state == NORMAL)
 		{
-			if (in_word)
-				count++;
+			count += in_word;
 			in_word = 0;
 		}
 		else
 			in_word = 1;
 		i++;
 	}
-	if (in_word)
-		count++;
+	count += in_word;
 	return (count);
 }
 
-t_quote_state	update_quote_state(char c, t_quote_state state)
+static void	update_state_simple(char c, t_quote_state *state)
 {
-	if (c == '\'' && state == NORMAL)
-		return (SINGLE_QUOTE);
-	if (c == '\'' && state == SINGLE_QUOTE)
-		return (NORMAL);
-	if (c == '"' && state == NORMAL)
-		return (DOUBLE_QUOTE);
-	if (c == '"' && state == DOUBLE_QUOTE)
-		return (NORMAL);
-	return (state);
+	if (c == '\'' && *state != DOUBLE_QUOTE)
+	{
+		if (*state == SINGLE_QUOTE)
+			*state = NORMAL;
+		else
+			*state = SINGLE_QUOTE;
+	}
+	else if (c == '"' && *state != SINGLE_QUOTE)
+	{
+		if (*state == DOUBLE_QUOTE)
+			*state = NORMAL;
+		else
+			*state = DOUBLE_QUOTE;
+	}
 }
 
 static int	calculate_word_len(char *str, int begin)
@@ -66,10 +68,7 @@ static int	calculate_word_len(char *str, int begin)
 	while (str[begin + len])
 	{
 		c = str[begin + len];
-		if (c == '\'' && state != DOUBLE_QUOTE)
-			state = (state == SINGLE_QUOTE) ? NORMAL : SINGLE_QUOTE;
-		else if (c == '"' && state != SINGLE_QUOTE)
-			state = (state == DOUBLE_QUOTE) ? NORMAL : DOUBLE_QUOTE;
+		update_state_simple(c, &state);
 		if (c == ' ' && state == NORMAL)
 			break ;
 		len++;
