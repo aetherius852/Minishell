@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 02:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/15 02:32:46 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/01/28 17:28:51 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ void	init_mini(t_mini *mini, char **envp)
 	mini->start = NULL;
 	mini->env = init_env(envp);
 	mini->secret_env = init_env(envp);
-	mini->in = dup(STDIN_FILENO);
-	mini->out = dup(STDOUT_FILENO);
+	mini->in = -1;
+	mini->out = -1;
 	mini->fdin = -1;
 	mini->fdout = -1;
 	mini->pipin = -1;
@@ -67,6 +67,7 @@ void	init_mini(t_mini *mini, char **envp)
 	mini->exit = 0;
 	mini->no_exec = 0;
 }
+
 
 void	reset_mini(t_mini *mini)
 {

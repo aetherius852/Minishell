@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 03:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/21 12:27:16 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/01/28 17:40:46 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,14 +67,20 @@ void	exec_cmd(t_mini *mini, t_token *token)
 
 	if (mini->charge == 0)
 		return ;
+
+	if (!apply_redirections(token->redirs, mini))
+		return ;
+
 	cmd = cmd_tab(token);
 	expand_cmd_args(cmd, mini);
+
 	if (cmd && ft_strcmp_exec(cmd[0], "exit") == 0 && has_pipe(token) == 0)
 		mini_exit(mini, cmd);
 	else if (cmd && is_builtin(cmd[0]))
 		mini->ret = exec_builtin(cmd, mini);
 	else if (cmd)
 		mini->ret = exec_bin(cmd, mini->env, mini);
+
 	free_tab(cmd);
 	close_pipes(mini);
 	mini->charge = 0;

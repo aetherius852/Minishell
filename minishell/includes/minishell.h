@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/22 14:45:51 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/01/28 17:41:53 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,7 @@ typedef struct s_token
 {
 	char			*str;
 	t_token_type	type;
+	t_redir			*redirs;
 	char			*value;
 	struct s_token	*next;
 }	t_token;
@@ -198,6 +199,27 @@ void			free_redirs(t_redir *redirs);
 void			free_split(char **split);
 
 /* ************************************************************************** */
+/*                              PIPES FUNCTIONS                             */
+/* ************************************************************************** */
+
+void			exec_pipeline(t_mini *mini, t_token *tokens);
+
+/* ************************************************************************** */
+/*                          REDIRECTION FUNCTIONS                             */
+/* ************************************************************************** */
+
+/* redir/redir_handler.c */
+int				apply_redirections(t_redir *redirs, t_mini *mini);
+
+/* redir/heredoc_handler.c */
+int				handle_heredoc(char *delimiter, t_mini *mini);
+
+/* redir/redir_utils.c */
+void			restore_std_fds(t_mini *mini);
+void			close_redir_fds(t_mini *mini);
+int				has_redirections(t_redir *redirs);
+
+/* ************************************************************************** */
 /*                          MAIN FUNCTIONS                                    */
 /* ************************************************************************** */
 
@@ -226,6 +248,9 @@ void			reset_mini(t_mini *mini);
 
 /* init/process.c */
 int				process_line(char *line, t_mini *mini);
+void			save_std_fds(t_mini *mini);
+void			restore_std_fds(t_mini *mini);
+
 
 /* init/signals.c */
 void			init_global_signals(void);

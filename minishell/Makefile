@@ -6,7 +6,7 @@
 #    By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#              #
-#    Updated: 2026/01/22 14:44:39 by efsilva-         ###   ########.fr        #
+#    Updated: 2026/01/28 17:09:49 by efsilva-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,6 @@ LDFLAGS = -L./libft -lft -lreadline
 OBJ_DIR = obj
 LIBFT_DIR = libft
 
-# Lista de archivos fuente con sus rutas completas
 SRCS = main.c \
        init/init.c \
        init/signals.c \
@@ -44,6 +43,10 @@ SRCS = main.c \
        parsing/quote_handler.c \
 	   parsing/quote_utils.c \
        parsing/syntax_checker.c \
+	   pipes/pipes.c \
+	   redirection/redir_handler.c \
+	   redirection/heredoc_handler.c \
+	   redirection/redir_utils.c \
        enviroment/enviroment.c \
 	   enviroment/free_env_array.c \
        enviroment/get_enviroment.c \

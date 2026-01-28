@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 02:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/22 14:14:44 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/01/28 17:30:44 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,18 @@ static int	handle_tokens(t_token *tokens, t_mini *mini, char *line)
 	data.tokens = tokens;
 	mini->start = tokens;
 	mini->charge = 1;
-	exec_cmd(mini, tokens);
+	if (has_pipe(tokens))
+	{
+		save_std_fds(mini);
+		exec_pipeline(mini, tokens);
+		restore_std_fds(mini);
+	}
+	else
+	{
+		save_std_fds(mini);
+		exec_cmd(mini, tokens);
+		restore_std_fds(mini);
+	}
 	reset_mini(mini);
 	free(line);
 	free_env_array(data.envp);
