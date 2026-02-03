@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 12:06:37 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/15 02:35:37 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/02 10:20:57 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	add_redir(t_redir **redirs, t_redir *new_redir)
 {
 	t_redir	*current;
 
-	if (!redirs)
+	if (!*redirs)
 	{
 		*redirs = new_redir;
 		return ;

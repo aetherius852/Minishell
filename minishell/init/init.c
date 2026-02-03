@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 02:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/28 17:28:51 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 10:45:21 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ void	init_mini(t_mini *mini, char **envp)
 	mini->exit = 0;
 	mini->no_exec = 0;
 }
-
 
 void	reset_mini(t_mini *mini)
 {

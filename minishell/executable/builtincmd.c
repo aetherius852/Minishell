@@ -6,13 +6,12 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 10:53:47 by inandres          #+#    #+#             */
-/*   Updated: 2026/01/15 02:18:36 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 10:44:45 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-//Compara dos strings
 static int	ft_strcmp_builtin(const char *s1, const char *s2)
 {
 	size_t	i;

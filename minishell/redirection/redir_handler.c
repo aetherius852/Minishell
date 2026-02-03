@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redir_handler.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/30 12:28:58 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/03 10:45:52 by efsilva-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 static int	open_input_file(char *file)
@@ -47,10 +59,8 @@ static int	apply_single_redir(t_redir *redir, t_mini *mini)
 		fd = handle_heredoc(redir->file, mini);
 	else
 		return (0);
-
 	if (fd == -1)
 		return (0);
-
 	if (redir->type == TOKEN_REDIR_IN || redir->type == TOKEN_HEREDOC)
 	{
 		if (mini->fdin != -1)

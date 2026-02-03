@@ -6,7 +6,7 @@
 #    By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#              #
-#    Updated: 2026/01/28 17:09:49 by efsilva-         ###   ########.fr        #
+#    Updated: 2026/02/02 11:16:28 by efsilva-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,6 +30,7 @@ SRCS = main.c \
        executable/builtincmd.c \
        executable/exec.c \
 	   executable/exec_utils.c \
+	   executable/exec_utils2.c \
 	   executable/exec_bin.c \
        parsing/cleanup_parser.c \
        parsing/expander.c \

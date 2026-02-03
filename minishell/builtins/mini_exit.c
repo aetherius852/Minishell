@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/14 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/15 02:17:57 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/02/02 14:33:47 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/02 14:33:48 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,12 @@
 
 void	mini_exit(t_mini *mini, char **cmd)
 {
-	(void)cmd;
+	int	status;
+
 	ft_putendl_fd("exit", STDOUT_FILENO);
-	mini->exit = 1;
+	if (cmd[1])
+		status = ft_atoi(cmd[1]);
+	else
+		status = mini->ret;
+	exit(status);
 }

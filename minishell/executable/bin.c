@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/01 10:29:56 by inandres          #+#    #+#             */
-/*   Updated: 2026/01/22 14:18:46 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 10:44:38 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static char	**env_list_to_array(t_env *env)
 	return (array);
 }
 
-int	cmd_exec(char *path, char **args, t_env *env, t_mini *mini)
+int	cmd_exec(char *path, char **args, t_env *env, t_mini *mini, t_redir *redirs)
 {
 	char	**env_array;
 	int		ret;
@@ -78,6 +78,11 @@ int	cmd_exec(char *path, char **args, t_env *env, t_mini *mini)
 	g_sig.pid = fork();
 	if (g_sig.pid == 0)
 	{
+		if (redirs)
+		{
+			if (!apply_redirections(redirs, mini))
+				exit(1);
+		}
 		env_array = env_list_to_array(env);
 		if (!env_array)
 			exit(ERROR);

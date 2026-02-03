@@ -6,27 +6,30 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 03:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/28 17:40:46 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 10:44:58 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static int	count_tokens(t_token *start)
+static int	count_cmd_tokens(t_token *start)
 {
 	t_token	*token;
-	int		i;
+	int		count;
 
 	if (!start)
 		return (0);
-	token = start->next;
-	i = 2;
-	while (token && token->type < TRUNC)
+	count = 0;
+	token = start;
+	while (token && token->type != TOKEN_PIPE && token->type != TOKEN_EOF)
 	{
+		if (token->type == TOKEN_WORD)
+			count++;
+		else if (is_redir_token(token->type) && token->next)
+			token = token->next;
 		token = token->next;
-		i++;
 	}
-	return (i);
+	return (count);
 }
 
 static void	fill_cmd_tab(char **tab, t_token *start)
@@ -34,13 +37,17 @@ static void	fill_cmd_tab(char **tab, t_token *start)
 	t_token	*token;
 	int		i;
 
-	tab[0] = ft_strdup(start->value);
-	i = 1;
-	token = start->next;
-	while (token && token->type < TRUNC)
+	i = 0;
+	token = start;
+	while (token && token->type != TOKEN_PIPE && token->type != TOKEN_EOF)
 	{
-		if (token->value)
-			tab[i++] = ft_strdup(token->value);
+		if (token->type == TOKEN_WORD)
+		{
+			tab[i] = ft_strdup(token->value);
+			i++;
+		}
+		else if (is_redir_token(token->type) && token->next)
+			token = token->next;
 		token = token->next;
 	}
 	tab[i] = NULL;
@@ -53,35 +60,62 @@ char	**cmd_tab(t_token *start)
 
 	if (!start || !start->value)
 		return (NULL);
-	size = count_tokens(start);
-	tab = malloc(sizeof(char *) * size);
+	size = count_cmd_tokens(start);
+	if (size == 0)
+		return (NULL);
+	tab = malloc(sizeof(char *) * (size + 1));
 	if (!tab)
 		return (NULL);
 	fill_cmd_tab(tab, start);
 	return (tab);
 }
 
-void	exec_cmd(t_mini *mini, t_token *token)
+t_redir	*parse_redirections(t_token *token)
 {
-	char	**cmd;
+	t_redir	*redirs;
+	t_redir	*new_redir;
 
-	if (mini->charge == 0)
-		return ;
+	redirs = NULL;
+	while (token)
+	{
+		if (token->type == TOKEN_PIPE || token->type == TOKEN_EOF)
+			break ;
+		if (is_redir_token(token->type))
+		{
+			if (token->next && token->next->type == TOKEN_WORD)
+			{
+				new_redir = create_redir(token->type, token->next->value);
+				if (new_redir)
+					add_redir(&redirs, new_redir);
+			}
+		}
+		token = token->next;
+	}
+	return (redirs);
+}
 
-	if (!apply_redirections(token->redirs, mini))
-		return ;
+int	exec_builtin_forked(char **cmd, t_mini *mini, t_redir *redirs)
+{
+	pid_t	pid;
+	int		ret;
+	int		status;
 
-	cmd = cmd_tab(token);
-	expand_cmd_args(cmd, mini);
-
-	if (cmd && ft_strcmp_exec(cmd[0], "exit") == 0 && has_pipe(token) == 0)
-		mini_exit(mini, cmd);
-	else if (cmd && is_builtin(cmd[0]))
-		mini->ret = exec_builtin(cmd, mini);
-	else if (cmd)
-		mini->ret = exec_bin(cmd, mini->env, mini);
-
-	free_tab(cmd);
-	close_pipes(mini);
-	mini->charge = 0;
+	ret = SUCCESS;
+	pid = fork();
+	if (pid == 0)
+	{
+		if (redirs && !apply_redirections(redirs, mini))
+			exit(1);
+		ret = exec_builtin(cmd, mini);
+		exit(ret);
+	}
+	else if (pid > 0)
+	{
+		waitpid(pid, &status, 0);
+		if (WIFEXITED(status))
+			ret = WEXITSTATUS(status);
+	}
+	else
+		ret = ERROR;
+	return (ret);
 }

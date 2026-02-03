@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc_handler.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/03 10:46:16 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/03 10:46:17 by efsilva-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 static void	setup_heredoc_signals(void)
@@ -34,7 +46,6 @@ static int	read_heredoc_lines(int fd, char *delimiter, t_mini *mini)
 		}
 		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
 			&& ft_strlen(line) == ft_strlen(delimiter))
-
 		{
 			free(line);
 			break ;

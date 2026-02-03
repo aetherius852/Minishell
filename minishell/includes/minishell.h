@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/28 17:41:53 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 10:45:08 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ typedef struct s_token
 {
 	char			*str;
 	t_token_type	type;
-	t_redir			*redirs;
+	struct s_redir	*redirs;
 	char			*value;
 	struct s_token	*next;
 }	t_token;
@@ -251,7 +251,6 @@ int				process_line(char *line, t_mini *mini);
 void			save_std_fds(t_mini *mini);
 void			restore_std_fds(t_mini *mini);
 
-
 /* init/signals.c */
 void			init_global_signals(void);
 void			handle_sigint(int sig);
@@ -271,13 +270,16 @@ int				ft_strcmp_exec(const char *s1, const char *s2);
 /* exec/exec.c */
 void			exec_cmd(t_mini *mini, t_token *token);
 char			**cmd_tab(t_token *start);
+char			**cmd_tab(t_token *start);
+t_redir			*parse_redirections(t_token *token);
+int				exec_builtin_forked(char **cmd, t_mini *mini, t_redir *redirs);
 
 /* exec/bin.c */
 int				ft_error_message(char *path);
-int				cmd_exec(char *path, char **args, t_env *env, t_mini *mini);
-char			*path_join(const char *s1, const char *s2);
+int				cmd_exec(char *path, char **args, t_env *env, t_mini *mini, t_redir *redirs);
 char			*check_dir(char *bin, char *command);
-int				exec_bin(char **args, t_env *env, t_mini *mini);
+int				exec_bin(char **args, t_env *env, t_mini *mini, t_redir *redirs);
+char			*path_join(const char *s1, const char *s2);
 
 /* exec/builtincmd.c */
 int				is_builtin(char *command);
