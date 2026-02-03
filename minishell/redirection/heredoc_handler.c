@@ -5,34 +5,45 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/03 10:46:16 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 10:46:17 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/01/30 12:30:00 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/03 11:38:53 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static void	setup_heredoc_signals(void)
+void	setup_heredoc_signals(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_IGN);
 }
 
-static void	restore_signals(void)
+void	restore_signals(void)
 {
 	signal(SIGINT, handle_sigint);
 	signal(SIGQUIT, SIG_IGN);
 }
 
-static char	*expand_heredoc_line(char *line, t_mini *mini)
+int	is_delimiter(char *line, char *delimiter)
 {
-	return (expansions(line, mini->env, mini->ret));
+	if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
+		&& ft_strlen(line) == ft_strlen(delimiter))
+		return (1);
+	return (0);
 }
 
-static int	read_heredoc_lines(int fd, char *delimiter, t_mini *mini)
+void	write_heredoc_line(int fd, char *line, t_mini *mini)
+{
+	char	*expanded;
+
+	expanded = expansions(line, mini->env, mini->ret);
+	ft_putendl_fd(expanded, fd);
+	free(expanded);
+}
+
+int	read_heredoc_lines(int fd, char *delimiter, t_mini *mini)
 {
 	char	*line;
-	char	*expanded;
 
 	while (1)
 	{
@@ -44,46 +55,13 @@ static int	read_heredoc_lines(int fd, char *delimiter, t_mini *mini)
 				STDERR_FILENO);
 			break ;
 		}
-		if (ft_strncmp(line, delimiter, ft_strlen(delimiter)) == 0
-			&& ft_strlen(line) == ft_strlen(delimiter))
+		if (is_delimiter(line, delimiter))
 		{
 			free(line);
 			break ;
 		}
-		expanded = expand_heredoc_line(line, mini);
-		ft_putendl_fd(expanded, fd);
+		write_heredoc_line(fd, line, mini);
 		free(line);
-		free(expanded);
 	}
 	return (1);
-}
-
-int	handle_heredoc(char *delimiter, t_mini *mini)
-{
-	int	pipefd[2];
-	pid_t	pid;
-	int	status;
-
-	if (pipe(pipefd) == -1)
-		return (-1);
-	setup_heredoc_signals();
-	pid = fork();
-	if (pid == -1)
-		return (-1);
-	if (pid == 0)
-	{
-		close(pipefd[0]);
-		read_heredoc_lines(pipefd[1], delimiter, mini);
-		close(pipefd[1]);
-		exit(0);
-	}
-	close(pipefd[1]);
-	waitpid(pid, &status, 0);
-	restore_signals();
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-	{
-		close(pipefd[0]);
-		return (-1);
-	}
-	return (pipefd[0]);
 }

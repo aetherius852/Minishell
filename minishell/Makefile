@@ -6,7 +6,7 @@
 #    By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#              #
-#    Updated: 2026/02/02 11:16:28 by efsilva-         ###   ########.fr        #
+#    Updated: 2026/02/03 11:41:45 by efsilva-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,6 +26,7 @@ SRCS = main.c \
        init/process.c \
        init/cleanup.c \
        executable/bin.c \
+	   executable/bin.exe.c \
 	   executable/bin_utils.c \
        executable/builtincmd.c \
        executable/exec.c \
@@ -45,8 +46,11 @@ SRCS = main.c \
 	   parsing/quote_utils.c \
        parsing/syntax_checker.c \
 	   pipes/pipes.c \
+	   pipes/pipes_exec.c \
 	   redirection/redir_handler.c \
+	   redirection/redir_aply.c \
 	   redirection/heredoc_handler.c \
+	   redirection/heredpc_exec.c \
 	   redirection/redir_utils.c \
        enviroment/enviroment.c \
 	   enviroment/free_env_array.c \

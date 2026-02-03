@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 10:35:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/02 11:16:19 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:30:18 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ static void	handle_builtin_cmd(t_mini *mini, char **cmd, t_redir *redirs,
 
 static void	handle_external_cmd(t_mini *mini, char **cmd, t_redir *redirs)
 {
-	mini->ret = exec_bin(cmd, mini->env, mini, redirs);
+	mini->redirs = redirs;
+	mini->ret = exec_bin(cmd, mini->env, mini);
+	mini->redirs = NULL;
 	free_redirs(redirs);
 }
 

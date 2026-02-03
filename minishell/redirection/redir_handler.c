@@ -6,13 +6,13 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/30 12:28:58 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 10:45:52 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:39:17 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static int	open_input_file(char *file)
+int	open_input_file(char *file)
 {
 	int	fd;
 
@@ -27,7 +27,7 @@ static int	open_input_file(char *file)
 	return (fd);
 }
 
-static int	open_output_file(char *file, int append)
+int	open_output_file(char *file, int append)
 {
 	int	fd;
 
@@ -45,7 +45,7 @@ static int	open_output_file(char *file, int append)
 	return (fd);
 }
 
-static int	apply_single_redir(t_redir *redir, t_mini *mini)
+int	get_redir_fd(t_redir *redir, t_mini *mini)
 {
 	int	fd;
 
@@ -58,8 +58,16 @@ static int	apply_single_redir(t_redir *redir, t_mini *mini)
 	else if (redir->type == TOKEN_HEREDOC)
 		fd = handle_heredoc(redir->file, mini);
 	else
-		return (0);
-	if (fd == -1)
+		return (-2);
+	return (fd);
+}
+
+int	apply_single_redir(t_redir *redir, t_mini *mini)
+{
+	int	fd;
+
+	fd = get_redir_fd(redir, mini);
+	if (fd == -1 || fd == -2)
 		return (0);
 	if (redir->type == TOKEN_REDIR_IN || redir->type == TOKEN_HEREDOC)
 	{
@@ -76,17 +84,8 @@ static int	apply_single_redir(t_redir *redir, t_mini *mini)
 	return (1);
 }
 
-int	apply_redirections(t_redir *redirs, t_mini *mini)
+void	apply_fds(t_mini *mini)
 {
-	t_redir	*current;
-
-	current = redirs;
-	while (current)
-	{
-		if (!apply_single_redir(current, mini))
-			return (0);
-		current = current->next;
-	}
 	if (mini->fdin != -1)
 	{
 		dup2(mini->fdin, STDIN_FILENO);
@@ -99,5 +98,4 @@ int	apply_redirections(t_redir *redirs, t_mini *mini)
 		close(mini->fdout);
 		mini->fdout = -1;
 	}
-	return (1);
 }

@@ -6,11 +6,27 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 02:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/30 15:01:28 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:30:02 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+static void	execute_commands(t_token *tokens, t_mini *mini)
+{
+	if (has_pipe(tokens))
+	{
+		save_std_fds(mini);
+		exec_pipeline(mini, tokens);
+		restore_std_fds(mini);
+	}
+	else
+	{
+		save_std_fds(mini);
+		exec_cmd(mini, tokens);
+		restore_std_fds(mini);
+	}
+}
 
 static int	handle_tokens(t_token *tokens, t_mini *mini, char *line)
 {
@@ -28,20 +44,7 @@ static int	handle_tokens(t_token *tokens, t_mini *mini, char *line)
 	data.tokens = tokens;
 	mini->start = tokens;
 	mini->charge = 1;
-	
-	if (has_pipe(tokens))
-	{
-		save_std_fds(mini);
-		exec_pipeline(mini, tokens);
-		restore_std_fds(mini);
-	}
-	else
-	{
-		save_std_fds(mini);
-		exec_cmd(mini, tokens);
-		restore_std_fds(mini);
-	}
-	
+	execute_commands(tokens, mini);
 	reset_mini(mini);
 	free(line);
 	free_env_array(data.envp);
@@ -52,8 +55,13 @@ int	process_line(char *line, t_mini *mini)
 {
 	t_token	*tokens;
 
-	if (!line || !*line)
+	if (!line)
 		return (0);
+	if (!*line)
+	{
+		free(line);
+		return (0);
+	}
 	add_history(line);
 	if (check_unclosed_quotes(line))
 	{

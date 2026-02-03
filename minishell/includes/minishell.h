@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 10:45:08 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:33:38 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ typedef struct s_mini
 	t_token			*start;
 	t_env			*env;
 	t_env			*secret_env;
+	t_redir			*redirs;
 	int				in;
 	int				out;
 	int				fdin;
@@ -276,9 +277,9 @@ int				exec_builtin_forked(char **cmd, t_mini *mini, t_redir *redirs);
 
 /* exec/bin.c */
 int				ft_error_message(char *path);
-int				cmd_exec(char *path, char **args, t_env *env, t_mini *mini, t_redir *redirs);
+int				cmd_exec(char *path, char **args, t_env *env, t_mini *mini);
 char			*check_dir(char *bin, char *command);
-int				exec_bin(char **args, t_env *env, t_mini *mini, t_redir *redirs);
+int				exec_bin(char **args, t_env *env, t_mini *mini);
 char			*path_join(const char *s1, const char *s2);
 
 /* exec/builtincmd.c */

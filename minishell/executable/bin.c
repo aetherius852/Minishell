@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/01 10:29:56 by inandres          #+#    #+#             */
-/*   Updated: 2026/02/03 10:44:38 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:31:46 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	ft_error_message(char *path)
 	return (ret);
 }
 
-static char	**env_list_to_array(t_env *env)
+char	**env_list_to_array(t_env *env)
 {
 	t_env	*tmp;
 	char	**array;
@@ -67,39 +67,6 @@ static char	**env_list_to_array(t_env *env)
 	}
 	array[i] = NULL;
 	return (array);
-}
-
-int	cmd_exec(char *path, char **args, t_env *env, t_mini *mini, t_redir *redirs)
-{
-	char	**env_array;
-	int		ret;
-
-	ret = SUCCESS;
-	g_sig.pid = fork();
-	if (g_sig.pid == 0)
-	{
-		if (redirs)
-		{
-			if (!apply_redirections(redirs, mini))
-				exit(1);
-		}
-		env_array = env_list_to_array(env);
-		if (!env_array)
-			exit(ERROR);
-		if (ft_strchr(path, '/') != NULL)
-			execve(path, args, env_array);
-		ret = ft_error_message(path);
-		free(env_array);
-		free_token(mini->start);
-		exit(ret);
-	}
-	else
-		waitpid(g_sig.pid, &ret, 0);
-	if (g_sig.sigint == 1 || g_sig.sigquit == 1)
-		return (g_sig.exit_status);
-	if (WIFEXITED(ret))
-		ret = WEXITSTATUS(ret);
-	return (ret);
 }
 
 char	*path_join(const char *s1, const char *s2)

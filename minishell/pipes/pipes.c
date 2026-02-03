@@ -6,13 +6,13 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/22 17:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/28 17:08:22 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 11:38:24 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static int	count_pipes(t_token *tokens)
+int	count_pipes(t_token *tokens)
 {
 	int		count;
 	t_token	*tmp;
@@ -28,7 +28,7 @@ static int	count_pipes(t_token *tokens)
 	return (count);
 }
 
-static t_token	*get_next_cmd(t_token *token)
+t_token	*get_next_cmd(t_token *token)
 {
 	while (token && token->type != TOKEN_PIPE)
 		token = token->next;
@@ -37,7 +37,7 @@ static t_token	*get_next_cmd(t_token *token)
 	return (token);
 }
 
-static void	setup_pipe_fds(t_mini *mini, int is_last, int pipefd[2])
+void	setup_pipe_fds(t_mini *mini, int is_last, int pipefd[2])
 {
 	if (mini->pipin != -1)
 	{
@@ -52,39 +52,21 @@ static void	setup_pipe_fds(t_mini *mini, int is_last, int pipefd[2])
 	}
 }
 
-void	exec_pipeline(t_mini *mini, t_token *tokens)
+void	execute_pipeline_child(t_mini *mini, t_token *current,
+	int is_last, int pipefd[2])
 {
-	int		pipefd[2];
-	int		num_pipes;
-	int		i;
-	t_token	*current;
+	setup_pipe_fds(mini, is_last, pipefd);
+	exec_cmd(mini, current);
+	exit(mini->ret);
+}
 
-	num_pipes = count_pipes(tokens);
-	current = tokens;
-	i = 0;
-	while (i <= num_pipes)
+void	handle_parent_fds(t_mini *mini, int i, int num_pipes, int pipefd[2])
+{
+	if (mini->pipin != -1)
+		close(mini->pipin);
+	if (i < num_pipes)
 	{
-		if (i < num_pipes)
-			pipe(pipefd);
-		mini->pid = fork();
-		if (mini->pid == 0)
-		{
-			setup_pipe_fds(mini, i == num_pipes, pipefd);
-			exec_cmd(mini, current);
-			exit(mini->ret);
-		}
-		if (mini->pipin != -1)
-			close(mini->pipin);
-		if (i < num_pipes)
-		{
-			close(pipefd[1]);
-			mini->pipin = pipefd[0];
-		}
-		current = get_next_cmd(current);
-		i++;
+		close(pipefd[1]);
+		mini->pipin = pipefd[0];
 	}
-	while (i-- > 0)
-		waitpid(-1, &mini->ret, 0);
-	if (WIFEXITED(mini->ret))
-		mini->ret = WEXITSTATUS(mini->ret);
 }
