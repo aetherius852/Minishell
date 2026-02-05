@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/22 17:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 11:38:24 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 12:14:24 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	execute_pipeline_child(t_mini *mini, t_token *current,
 	exit(mini->ret);
 }
 
-void	handle_parent_fds(t_mini *mini, int i, int num_pipes, int pipefd[2])
+void	handle_fd(t_mini *mini, int i, int num_pipes, int pipefd[2])
 {
 	if (mini->pipin != -1)
 		close(mini->pipin);

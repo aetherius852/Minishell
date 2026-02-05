@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 03:30:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 11:30:35 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/05 09:09:44 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,15 @@ static t_env	*find_path_env(t_env *env)
 	return (env);
 }
 
-static int	execute_with_path(char **args, t_env *env, t_mini *mini)
+static int	execute_with_path(char **args, t_env *full_env, t_env *path_env,
+	t_mini *mini)
 {
 	int		i;
 	char	**bin;
 	char	*path;
 	int		ret;
 
-	bin = ft_split(env->value, ':');
+	bin = ft_split(path_env->value, ':');
 	if (!args[0] || !bin[0])
 		return (ERROR);
 	i = 1;
@@ -34,9 +35,9 @@ static int	execute_with_path(char **args, t_env *env, t_mini *mini)
 	while (args[0] && bin[i] && path == NULL)
 		path = check_dir(bin[i++], args[0]);
 	if (path != NULL)
-		ret = cmd_exec(path, args, env, mini);
+		ret = cmd_exec(path, args, full_env, mini);
 	else
-		ret = cmd_exec(args[0], args, env, mini);
+		ret = cmd_exec(args[0], args, full_env, mini);
 	free_tab(bin);
 	free(path);
 	return (ret);
@@ -49,5 +50,5 @@ int	exec_bin(char **args, t_env *env, t_mini *mini)
 	path_env = find_path_env(env);
 	if (path_env == NULL || path_env->next == NULL)
 		return (cmd_exec(args[0], args, env, mini));
-	return (execute_with_path(args, path_env, mini));
+	return (execute_with_path(args, env, path_env, mini));
 }

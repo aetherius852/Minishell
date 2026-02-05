@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 11:33:38 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/05 09:25:48 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,6 +204,12 @@ void			free_split(char **split);
 /* ************************************************************************** */
 
 void			exec_pipeline(t_mini *mini, t_token *tokens);
+int				count_pipes(t_token *tokens);
+t_token			*get_next_cmd(t_token *token);
+void			setup_pipe_fds(t_mini *mini, int is_last, int pipefd[2]);
+void			handle_fd(t_mini *mini, int i, int num_pipes, int pipefd[2]);
+void			execute_pipeline_child(t_mini *mini, t_token *current,
+					int is_last, int pipefd[2]);
 
 /* ************************************************************************** */
 /*                          REDIRECTION FUNCTIONS                             */
@@ -211,14 +217,24 @@ void			exec_pipeline(t_mini *mini, t_token *tokens);
 
 /* redir/redir_handler.c */
 int				apply_redirections(t_redir *redirs, t_mini *mini);
+int				open_output_file(char *file, int append);
+int				open_input_file(char *file);
+int				get_redir_fd(t_redir *redir, t_mini *mini);
+int				apply_single_redir(t_redir *redir, t_mini *mini);
+void			apply_fds(t_mini *mini);
 
 /* redir/heredoc_handler.c */
 int				handle_heredoc(char *delimiter, t_mini *mini);
+void			setup_heredoc_signals(void);
+void			restore_signals(void);
+int				is_delimiter(char *line, char *delimiter);
+void			write_heredoc_line(int fd, char *line, t_mini *mini);
+int				read_heredoc_lines(int fd, char *delimiter, t_mini *mini);
 
 /* redir/redir_utils.c */
 void			restore_std_fds(t_mini *mini);
-void			close_redir_fds(t_mini *mini);
 int				has_redirections(t_redir *redirs);
+void			save_std_fds(t_mini *mini);
 
 /* ************************************************************************** */
 /*                          MAIN FUNCTIONS                                    */
@@ -267,6 +283,9 @@ void			expand_cmd_args(char **cmd, t_mini *mini);
 char			*expansions(char *str, t_env *env, int exit_status);
 int				has_pipe(t_token *token);
 int				ft_strcmp_exec(const char *s1, const char *s2);
+
+/* exec/binexe.c */
+char			**env_list_to_array(t_env *env);
 
 /* exec/exec.c */
 void			exec_cmd(t_mini *mini, t_token *token);
@@ -340,6 +359,8 @@ void			ft_env(t_env *env);
 
 /* builtins/ft_export.c */
 void			ft_export(char **args, t_env *env, t_env *secret_env);
+void			update_or_add_env(char *arg, t_env **env_list);
+int				is_valid_export_arg(char *arg);
 
 /* builtins/ft_unset.c */
 void			ft_unset(char **args, t_mini *mini);

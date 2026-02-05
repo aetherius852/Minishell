@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 02:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 10:45:21 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/05 09:29:29 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,46 @@ static t_env	*add_env_node(t_env *env, char *value)
 	return (env);
 }
 
+static int	env_has_var(t_env *env, char *var_name)
+{
+	char	env_name[1024];
+	int		len;
+
+	len = ft_strlen(var_name);
+	while (env)
+	{
+		get_env_name(env_name, env->value);
+		if (ft_strncmp(var_name, env_name, len) == 0
+			&& ft_strlen(env_name) == (size_t)len)
+			return (1);
+		env = env->next;
+	}
+	return (0);
+}
+
+static void	ensure_minimal_env(t_env **env)
+{
+	char	cwd[1024];
+	char	*pwd_var;
+
+	if (!env_has_var(*env, "TERM"))
+		*env = add_env_node(*env, "TERM=dumb");
+	if (!env_has_var(*env, "PATH"))
+		*env = add_env_node(*env, "PATH=/usr/bin:/bin");
+	if (!env_has_var(*env, "PWD"))
+	{
+		if (getcwd(cwd, sizeof(cwd)))
+		{
+			pwd_var = ft_strjoin("PWD=", cwd);
+			if (pwd_var)
+			{
+				*env = add_env_node(*env, pwd_var);
+				free(pwd_var);
+			}
+		}
+	}
+}
+
 t_env	*init_env(char **envp)
 {
 	t_env	*env;
@@ -38,47 +78,13 @@ t_env	*init_env(char **envp)
 
 	env = NULL;
 	i = 0;
-	while (envp[i])
+	while (envp && envp[i])
 	{
 		env = add_env_node(env, envp[i]);
 		if (!env)
 			return (NULL);
 		i++;
 	}
+	ensure_minimal_env(&env);
 	return (env);
-}
-
-void	init_mini(t_mini *mini, char **envp)
-{
-	mini->start = NULL;
-	mini->env = init_env(envp);
-	mini->secret_env = init_env(envp);
-	mini->in = -1;
-	mini->out = -1;
-	mini->fdin = -1;
-	mini->fdout = -1;
-	mini->pipin = -1;
-	mini->pipout = -1;
-	mini->pid = -1;
-	mini->charge = 0;
-	mini->parent = 0;
-	mini->last = 0;
-	mini->ret = 0;
-	mini->exit = 0;
-	mini->no_exec = 0;
-}
-
-void	reset_mini(t_mini *mini)
-{
-	if (mini->start)
-		free_token(mini->start);
-	mini->start = NULL;
-	mini->charge = 0;
-	mini->parent = 0;
-	mini->last = 0;
-	mini->pipin = -1;
-	mini->pipout = -1;
-	mini->fdin = -1;
-	mini->fdout = -1;
-	mini->no_exec = 0;
 }

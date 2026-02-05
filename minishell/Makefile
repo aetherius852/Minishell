@@ -6,7 +6,7 @@
 #    By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#              #
-#    Updated: 2026/02/03 11:41:45 by efsilva-         ###   ########.fr        #
+#    Updated: 2026/02/05 09:27:16 by efsilva-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,6 +22,7 @@ LIBFT_DIR = libft
 
 SRCS = main.c \
        init/init.c \
+	   init/init_utils.c \
        init/signals.c \
        init/process.c \
        init/cleanup.c \
@@ -50,7 +51,7 @@ SRCS = main.c \
 	   redirection/redir_handler.c \
 	   redirection/redir_aply.c \
 	   redirection/heredoc_handler.c \
-	   redirection/heredpc_exec.c \
+	   redirection/heredoc_exec.c \
 	   redirection/redir_utils.c \
        enviroment/enviroment.c \
 	   enviroment/free_env_array.c \
@@ -66,6 +67,7 @@ SRCS = main.c \
        builtins/ft_env.c \
        builtins/ft_cd.c \
        builtins/ft_export.c \
+	   builtins/ft_export_utils.c \
        builtins/ft_unset.c \
        builtins/mini_exit.c
 

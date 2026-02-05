@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 12:10:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 11:37:35 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/03 12:15:05 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	exec_pipeline(t_mini *mini, t_token *tokens)
 		mini->pid = fork();
 		if (mini->pid == 0)
 			execute_pipeline_child(mini, current, i == num_pipes, pipefd);
-		handle_parent_fds(mini, i, num_pipes, pipefd);
+		handle_fd(mini, i, num_pipes, pipefd);
 		current = get_next_cmd(current);
 		i++;
 	}
