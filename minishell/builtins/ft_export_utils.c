@@ -6,13 +6,13 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 16:05:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/05 09:26:18 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/06 11:35:01 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static void	export_variable(char *arg, t_env *env, t_env *secret_env)
+static void export_variable(char *arg, t_env **env, t_env **secret_env)
 {
 	if (!ft_strchr(arg, '='))
 		return ;
@@ -23,17 +23,17 @@ static void	export_variable(char *arg, t_env *env, t_env *secret_env)
 		ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
 		return ;
 	}
-	update_or_add_env(arg, &env);
-	update_or_add_env(arg, &secret_env);
+	update_or_add_env(arg, env);
+	update_or_add_env(arg, secret_env);
 }
 
-void	ft_export(char **args, t_env *env, t_env *secret_env)
+void	ft_export(char **args, t_env **env, t_env **secret_env)
 {
 	int	i;
 
 	if (!args[1])
 	{
-		print_sorted_env(env);
+		print_sorted_env(*env);
 		return ;
 	}
 	i = 1;
