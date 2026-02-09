@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 12:06:19 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/22 14:40:18 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/09 12:35:00 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ char	*expand_dollar(char *str, int *i, t_data *data)
 		return (expand_exit_status(data));
 	}
 	if (!ft_isalpha(str[*i]) && str[*i] != '_')
-		return (ft_strdup(""));
+ 	   return (ft_strdup("$"));
 	var_name = get_var_name(str, *i);
 	if (!var_name)
 		return (NULL);
