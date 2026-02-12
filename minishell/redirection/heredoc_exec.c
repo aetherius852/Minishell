@@ -5,47 +5,46 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/02 12:05:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 12:07:10 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/02/11 13:38:50 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/12 09:46:20 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static void	handle_heredoc_child(int *pipefd, char *delimiter, t_mini *mini)
+static void	print_heredoc_warning(char *delimiter)
 {
-	close(pipefd[0]);
-	read_heredoc_lines(pipefd[1], delimiter, mini);
-	close(pipefd[1]);
-	exit(0);
-}
-
-static int	handle_heredoc_parent(int *pipefd, int status)
-{
-	close(pipefd[1]);
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-	{
-		close(pipefd[0]);
-		return (-1);
-	}
-	return (pipefd[0]);
+	ft_putstr_fd("minishell: warning: here-document delimited by ", 2);
+	ft_putstr_fd("end-of-file (wanted `", 2);
+	ft_putstr_fd(delimiter, 2);
+	ft_putendl_fd("')", 2);
 }
 
 int	handle_heredoc(char *delimiter, t_mini *mini)
 {
 	int		pipefd[2];
-	pid_t	pid;
-	int		status;
+	char	*line;
 
 	if (pipe(pipefd) == -1)
 		return (-1);
 	setup_heredoc_signals();
-	pid = fork();
-	if (pid == -1)
-		return (-1);
-	if (pid == 0)
-		handle_heredoc_child(pipefd, delimiter, mini);
-	waitpid(pid, &status, 0);
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+		{
+			print_heredoc_warning(delimiter);
+			break ;
+		}
+		if (is_delimiter(line, delimiter))
+		{
+			free(line);
+			break ;
+		}
+		write_heredoc_line(pipefd[1], line, mini);
+		free(line);
+	}
 	restore_signals();
-	return (handle_heredoc_parent(pipefd, status));
+	close(pipefd[1]);
+	return (pipefd[0]);
 }

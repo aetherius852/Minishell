@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/01/30 12:30:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 11:38:53 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/02/11 13:39:25 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/11 13:39:27 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,29 +39,4 @@ void	write_heredoc_line(int fd, char *line, t_mini *mini)
 	expanded = expansions(line, mini->env, mini->ret);
 	ft_putendl_fd(expanded, fd);
 	free(expanded);
-}
-
-int	read_heredoc_lines(int fd, char *delimiter, t_mini *mini)
-{
-	char	*line;
-
-	while (1)
-	{
-		line = readline("> ");
-		if (!line)
-		{
-			ft_putendl_fd(
-				"minishell: warning: here-document delimited by EOF",
-				STDERR_FILENO);
-			break ;
-		}
-		if (is_delimiter(line, delimiter))
-		{
-			free(line);
-			break ;
-		}
-		write_heredoc_line(fd, line, mini);
-		free(line);
-	}
-	return (1);
 }

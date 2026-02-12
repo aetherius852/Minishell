@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/24 12:07:02 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/02 10:10:53 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/02/11 13:39:12 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/11 13:39:16 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ void	free_redirs(t_redir *redirs)
 		next = current->next;
 		if (current->file)
 			free(current->file);
+		if (current->heredoc_fd != -1)
+			close(current->heredoc_fd);
 		free(current);
 		current = next;
 	}

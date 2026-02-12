@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/09 11:46:13 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/12 10:29:37 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,7 @@ typedef struct s_redir
 	t_token_type	type;
 	char			*file;
 	struct s_redir	*next;
+	int				heredoc_fd;
 }	t_redir;
 
 typedef struct s_cmd
@@ -180,12 +181,17 @@ void			add_cmd(t_cmd **cmds, t_cmd *new_cmd);
 
 /* parsing/parser2.c */
 t_cmd			*parse_tokens(t_token *tokens);
+int				process_redir(t_cmd *cmd, t_token **current, t_mini *mini);
+int				fill_args(t_cmd *cmd, t_token **tokens, t_mini *mini);
+int				count_args(t_token *tokens);
+int				process_heredoc_rd(t_cmd *cmd, t_token **current, t_mini *mini);
 
 /* parsing/parser_utils.c */
 int				is_redir_token(t_token_type type);
 int				is_pipe_token(t_token_type type);
 t_redir			*create_redir(t_token_type type, char *file);
 void			add_redir(t_redir **redirs, t_redir *new_redir);
+t_cmd			*parse_single_cmd(t_token **tokens, t_mini *mini);
 
 /* parsing/syntax_checker.c */
 int				check_syntax(t_token *tokens);
@@ -304,6 +310,7 @@ char			*path_join(const char *s1, const char *s2);
 /* exec/builtincmd.c */
 int				is_builtin(char *command);
 int				exec_builtin(char **args, t_mini *mini);
+int				is_builtin_with_args(char **args);
 
 /* ************************************************************************** */
 /*                          ENVIRONMENT FUNCTIONS                             */
@@ -349,17 +356,21 @@ void			free_tab(char **tab);
 int				ft_echo(char **args);
 
 /* builtins/ft_cd.c */
-int				ft_cd(char **args, t_env *env);
+char			*get_oldpwd_path(t_env *env);
+char			*get_home_path(t_env *env);
+int				ft_cd(char **args, t_mini *mini);
+void			update_env_vars(t_env *env, char *old_pwd);
 
 /* builtins/ft_pwd.c */
-int				ft_pwd(void);
+int				ft_pwd(t_env *env);
 
 /* builtins/ft_env.c */
-void			ft_env(t_env *env);
+int				ft_env(t_env *env, char **args);
 
 /* builtins/ft_export.c */
 void			ft_export(char **args, t_env **env, t_env **secret_env);
 void			update_or_add_env(char *arg, t_env **env_list);
+int				is_valid_export_arg(char *arg);
 int				is_valid_export_arg(char *arg);
 
 /* builtins/ft_unset.c */

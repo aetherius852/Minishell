@@ -6,47 +6,54 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/09 11:01:24 by inandres          #+#    #+#             */
-/*   Updated: 2026/01/22 14:32:46 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/12 09:50:22 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	ft_strcmp_exec(const char *s1, const char *s2)
+static int	is_empty_or_whitespace(char *str)
 {
-	size_t	i;
+	int	i;
+
+	if (!str || !*str)
+		return (1);
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] != ' ' && str[i] != '\t')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static void	compact_args(char **cmd)
+{
+	int	i;
+	int	j;
 
 	i = 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
-		i++;
-	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
-}
-
-int	has_pipe(t_token *token)
-{
-	while (token)
+	j = 0;
+	while (cmd[i])
 	{
-		if (token->type == TOKEN_PIPE)
-			return (1);
-		token = token->next;
+		if (!is_empty_or_whitespace(cmd[i]))
+		{
+			if (i != j)
+			{
+				cmd[j] = cmd[i];
+				cmd[i] = NULL;
+			}
+			j++;
+		}
+		else
+		{
+			free(cmd[i]);
+			cmd[i] = NULL;
+		}
+		i++;
 	}
-	return (0);
-}
-
-char	*expansions(char *str, t_env *env, int exit_status)
-{
-	t_data	data;
-	char	*expanded;
-
-	data.envp = env_to_array(env);
-	if (!data.envp)
-		return (ft_strdup(str));
-	data.exit_status = exit_status;
-	data.tokens = NULL;
-	data.cmds = NULL;
-	expanded = expand_variables(str, &data);
-	free_env_array(data.envp);
-	return (expanded);
+	cmd[j] = NULL;
 }
 
 void	expand_cmd_args(char **cmd, t_mini *mini)
@@ -68,14 +75,5 @@ void	expand_cmd_args(char **cmd, t_mini *mini)
 		}
 		i++;
 	}
-}
-
-void	close_pipes(t_mini *mini)
-{
-	if (mini->pipin != -1)
-		close(mini->pipin);
-	if (mini->pipout != -1)
-		close(mini->pipout);
-	mini->pipin = -1;
-	mini->pipout = -1;
+	compact_args(cmd);
 }

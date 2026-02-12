@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/10/24 12:06:37 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/02 10:20:57 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/02/11 13:39:45 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/12 00:36:33 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ t_redir	*create_redir(t_token_type type, char *file)
 		free(redir);
 		return (NULL);
 	}
+	redir->heredoc_fd = -1;
 	redir->next = NULL;
 	return (redir);
 }
@@ -61,4 +62,16 @@ void	add_redir(t_redir **redirs, t_redir *new_redir)
 	while (current->next)
 		current = current->next;
 	current->next = new_redir;
+}
+
+int	process_redir(t_cmd *cmd, t_token **current, t_mini *mini)
+{
+	if (!(*current)->next)
+		return (0);
+	if ((*current)->type == TOKEN_HEREDOC)
+		return (process_heredoc_rd(cmd, current, mini));
+	add_redir(&cmd->redirs,
+		create_redir((*current)->type, (*current)->next->value));
+	*current = (*current)->next;
+	return (1);
 }

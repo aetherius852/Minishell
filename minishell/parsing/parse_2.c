@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/11/25 12:46:47 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/01/15 02:18:14 by efsilva-         ###   ########.fr       */
+/*   Created: 2026/02/11 13:38:59 by efsilva-          #+#    #+#             */
+/*   Updated: 2026/02/12 00:35:42 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-static int	count_args(t_token *tokens)
+int	count_args(t_token *tokens)
 {
 	int		count;
 	t_token	*current;
@@ -30,17 +30,7 @@ static int	count_args(t_token *tokens)
 	return (count);
 }
 
-static int	process_redir(t_cmd *cmd, t_token **current)
-{
-	if (!(*current)->next)
-		return (0);
-	add_redir(&cmd->redirs,
-		create_redir((*current)->type, (*current)->next->value));
-	*current = (*current)->next;
-	return (1);
-}
-
-static int	fill_args(t_cmd *cmd, t_token **tokens)
+int	fill_args(t_cmd *cmd, t_token **tokens, t_mini *mini)
 {
 	int		i;
 	t_token	*current;
@@ -58,7 +48,7 @@ static int	fill_args(t_cmd *cmd, t_token **tokens)
 		}
 		else if (is_redir_token(current->type))
 		{
-			if (!process_redir(cmd, &current))
+			if (!process_redir(cmd, &current, mini))
 				return (0);
 		}
 		current = current->next;
@@ -68,7 +58,7 @@ static int	fill_args(t_cmd *cmd, t_token **tokens)
 	return (1);
 }
 
-static t_cmd	*parse_single_cmd(t_token **tokens)
+t_cmd	*parse_single_cmd(t_token **tokens, t_mini *mini)
 {
 	t_cmd	*cmd;
 	int		arg_count;
@@ -83,7 +73,7 @@ static t_cmd	*parse_single_cmd(t_token **tokens)
 		free(cmd);
 		return (NULL);
 	}
-	if (!fill_args(cmd, tokens))
+	if (!fill_args(cmd, tokens, mini))
 	{
 		free_cmds(cmd);
 		return (NULL);
@@ -91,7 +81,7 @@ static t_cmd	*parse_single_cmd(t_token **tokens)
 	return (cmd);
 }
 
-t_cmd	*parse_tokens(t_token *tokens)
+t_cmd	*parse_tokens_with_mini(t_token *tokens, t_mini *mini)
 {
 	t_cmd	*cmds;
 	t_cmd	*new_cmd;
@@ -101,7 +91,7 @@ t_cmd	*parse_tokens(t_token *tokens)
 	current = tokens;
 	while (current && current->type != TOKEN_EOF)
 	{
-		new_cmd = parse_single_cmd(&current);
+		new_cmd = parse_single_cmd(&current, mini);
 		if (!new_cmd)
 		{
 			free_cmds(cmds);
@@ -112,4 +102,26 @@ t_cmd	*parse_tokens(t_token *tokens)
 			current = current->next;
 	}
 	return (cmds);
+}
+
+int	process_heredoc_rd(t_cmd *cmd, t_token **current, t_mini *mini)
+{
+	t_redir	*redir;
+	int		fd;
+
+	if (!(*current)->next)
+		return (0);
+	fd = handle_heredoc((*current)->next->value, mini);
+	if (fd == -1)
+		return (0);
+	redir = create_redir((*current)->type, (*current)->next->value);
+	if (!redir)
+	{
+		close(fd);
+		return (0);
+	}
+	redir->heredoc_fd = fd;
+	add_redir(&cmd->redirs, redir);
+	*current = (*current)->next;
+	return (1);
 }

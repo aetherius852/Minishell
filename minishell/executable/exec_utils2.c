@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 10:35:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/03 11:30:18 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/12 10:27:58 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	exec_cmd(t_mini *mini, t_token *token)
 	expand_cmd_args(cmd, mini);
 	if (cmd && ft_strcmp_exec(cmd[0], "exit") == 0 && has_pipe(token) == 0)
 		handle_exit_cmd(mini, cmd, redirs);
-	else if (cmd && is_builtin(cmd[0]))
+	else if (cmd && is_builtin_with_args(cmd))
 		handle_builtin_cmd(mini, cmd, redirs, token);
 	else if (cmd)
 		handle_external_cmd(mini, cmd, redirs);

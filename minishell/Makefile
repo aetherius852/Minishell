@@ -6,7 +6,7 @@
 #    By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#              #
-#    Updated: 2026/02/05 09:27:16 by efsilva-         ###   ########.fr        #
+#    Updated: 2026/02/12 09:53:12 by efsilva-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,6 +33,7 @@ SRCS = main.c \
        executable/exec.c \
 	   executable/exec_utils.c \
 	   executable/exec_utils2.c \
+	   executable/exec_utils3.c \
 	   executable/exec_bin.c \
        parsing/cleanup_parser.c \
        parsing/expander.c \
@@ -57,7 +58,6 @@ SRCS = main.c \
 	   enviroment/free_env_array.c \
        enviroment/get_enviroment.c \
 	   enviroment/get_enviroment_utils.c \
-       enviroment/shelllvl.c \
        enviroment/sort_enviroment.c \
        utils/free_tab.c \
        utils/free_token.c \
@@ -66,6 +66,7 @@ SRCS = main.c \
        builtins/ft_pwd.c \
        builtins/ft_env.c \
        builtins/ft_cd.c \
+	   builtins/ft_cd_utils.c \
        builtins/ft_export.c \
 	   builtins/ft_export_utils.c \
        builtins/ft_unset.c \
