@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/24 00:00:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/12 10:29:37 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/13 12:40:30 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -299,6 +299,7 @@ char			**cmd_tab(t_token *start);
 char			**cmd_tab(t_token *start);
 t_redir			*parse_redirections(t_token *token);
 int				exec_builtin_forked(char **cmd, t_mini *mini, t_redir *redirs);
+int				is_redir_type(t_token_type type);
 
 /* exec/bin.c */
 int				ft_error_message(char *path);

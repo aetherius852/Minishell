@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/15 03:40:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/12 09:50:13 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/13 12:40:17 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,8 @@ static int	count_word_tokens(t_token *start)
 	{
 		if (token->type == TOKEN_WORD)
 			count++;
+		else if (is_redir_type(token->type) && token->next)
+			token = token->next;
 		token = token->next;
 	}
 	return (count + 1);
@@ -78,6 +80,8 @@ static void	fill_cmd_tab(char **tab, t_token *start)
 	{
 		if (token->type == TOKEN_WORD)
 			tab[i++] = ft_strdup(token->value);
+		else if (is_redir_type(token->type) && token->next)
+			token = token->next;
 		token = token->next;
 	}
 	tab[i] = NULL;

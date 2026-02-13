@@ -6,7 +6,7 @@
 /*   By: efsilva- <efsilva-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/02 10:35:00 by efsilva-          #+#    #+#             */
-/*   Updated: 2026/02/12 10:27:58 by efsilva-         ###   ########.fr       */
+/*   Updated: 2026/02/13 12:40:24 by efsilva-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,10 @@ void	exec_cmd(t_mini *mini, t_token *token)
 	free_tab(cmd);
 	close_pipes(mini);
 	mini->charge = 0;
+}
+
+int	is_redir_type(t_token_type type)
+{
+	return (type == TOKEN_REDIR_IN || type == TOKEN_REDIR_OUT
+		|| type == TOKEN_REDIR_APPEND || type == TOKEN_HEREDOC);
 }
